@@ -97,7 +97,7 @@ class Jackett(object):
             notify(translation(32702).format("movie"), image=get_icon_path())
             log.warning("Jackett has no movie capabilities, please add a indexer that has movie capabilities. "
                         "Falling back to query search...")
-            return self.search_query(title + u' ' + year)
+            return self.search_query(title + u' ' + str(year))
 
         # todo what values are possible for imdb_id?
         movie_params = movie_search_caps["params"]
@@ -111,7 +111,7 @@ class Jackett(object):
         if imdb_id and has_imdb_caps:
             request_params["imdbid"] = imdb_id
         else:
-            request_params["q"] = title + u' ' + year
+            request_params["q"] = title + u' ' + str(year)
             log.debug("searching movie with query=%s", request_params["q"])
 
         return self._do_search_request(request_params)
