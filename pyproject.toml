@@ -6,16 +6,16 @@ authors = ["Fugkco <fugkco@github.io>"]
 license = "WTFPL"
 
 [tool.poetry.dependencies]
-python = "^2.7"
+python = "^3.6"
 requests = "^2.23.0"
 requests-toolbelt = "^0.9.1"
-torrentool = "^1.0.2"
+torrentool = "^1.1.1"
 
 [tool.poetry.dev-dependencies]
-kodistubs = "^18.0.0"
+kodistubs = "^19.0.3"
 flake8 = "^3.8.2"
 pytest = "^4.6.10"
-kodi-six = {git = "https://github.com/romanvm/kodi.six.git", rev = "0.1.3"}
+kodi-six = {git = "https://github.com/romanvm/kodi.six.git", rev = "0.1.3.1"}
 
 [build-system]
 requires = ["poetry>=0.12"]

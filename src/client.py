@@ -1,10 +1,10 @@
 #!/usr/bin/env python3.6
 # coding=utf-8
 import base64
-import httplib
+import http.client as httpclient
 import re
 import xml.etree.ElementTree as ET
-from urlparse import urljoin
+from urllib.parse import urljoin
 from xml.etree import ElementTree
 
 import requests
@@ -12,9 +12,8 @@ from elementum.provider import log
 from requests_toolbelt import sessions
 from torrentool.torrent import Torrent
 
-from src import utils
-from utils import notify, translation, get_icon_path, human_size, get_resolution, get_release_type, get_setting, \
-    set_setting
+from .utils import notify, translation, get_icon_path, human_size, get_resolution, get_release_type, get_setting, \
+    set_setting, resolutions
 
 
 # import logging
@@ -57,7 +56,7 @@ class Jackett(object):
     def get_caps(self):
         caps_resp = self._session.get("all/results/torznab", params={"t": "caps", "apikey": self._api_key})
 
-        if caps_resp.status_code != httplib.OK:
+        if caps_resp.status_code != httpclient.OK:
             notify(translation(32700).format(caps_resp.reason), image=get_icon_path())
             log.error("Jackett return %s", caps_resp.reason)
             set_setting('settings_validated', caps_resp.reason)
@@ -198,7 +197,7 @@ class Jackett(object):
         log.debug('Making a request to Jackett using params %s', repr(censored_params))
 
         search_resp = self._session.get("all/results/torznab", params=request_params)
-        if search_resp.status_code != httplib.OK:
+        if search_resp.status_code != httpclient.OK:
             notify(translation(32700).format(search_resp.reason), image=get_icon_path())
             log.error("Jackett returned %s", search_resp.reason)
             return []
@@ -252,7 +251,7 @@ class Jackett(object):
             if tag == "{" + self._torznab_ns + "}attr":
                 val = attrib["value"]
                 if isinstance(val, str):
-                    val = val.decode("utf-8")
+                    val = val
                 if "name" in attrib and "value" in attrib and attrib["name"] and val and \
                         attrib["name"] in self._torznab_elementum_mappings["torznab_attrs"]:
                     json = self._torznab_elementum_mappings["torznab_attrs"][attrib["name"]]
@@ -264,7 +263,7 @@ class Jackett(object):
                 val = ref.text.strip()
 
                 if isinstance(val, str):
-                    val = val.decode("utf-8")
+                    val = val
 
                 result[json] = val
 
@@ -294,7 +293,7 @@ class Jackett(object):
         result["seeds"] = int(result["seeds"])
         result["peers"] = int(result["peers"])
         resolution = get_resolution(result["name"])
-        result["resolution"] = utils.resolutions.keys()[::-1].index(resolution)
+        result["resolution"] = list(resolutions.keys())[::-1].index(resolution)
         result["_resolution"] = resolution
         result["release_type"] = get_release_type(result["name"])
 
@@ -315,7 +314,7 @@ def get_magnet_from_jackett(original_uri):
         response = requests.get(uri, allow_redirects=False)
         if response.is_redirect:
             uri = response.headers['Location']
-        elif response.status_code == httplib.OK and response.headers.get('Content-Type') == 'application/x-bittorrent':
+        elif response.status_code == httpclient.OK and response.headers.get('Content-Type') == 'application/x-bittorrent':
             torrent = Torrent.from_string(response.content)
             return torrent.get_magnet(True)
         else:
@@ -323,7 +322,7 @@ def get_magnet_from_jackett(original_uri):
                         response.status_code, response.reason)
             log.debug("Response for failed redirect %s is", original_uri)
             log.debug("=" * 50)
-            [log.debug("%s: %s", h, k) for (h, k) in response.headers.iteritems()]
+            [log.debug("%s: %s", h, k) for (h, k) in response.headers.items()]
             log.debug("")
             log.debug("%s", base64.standard_b64encode(response.content))
             log.debug("=" * 50)

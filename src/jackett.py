@@ -5,15 +5,15 @@ Burst processing thread
 """
 
 import time
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from kodi_six import xbmc, xbmcgui
 from elementum.provider import log
 
-import filter
-import utils
-from client import Jackett
-from utils import get_setting
+from . import filter
+from . import utils
+from .client import Jackett
+from .utils import get_setting
 
 available_providers = 0
 special_chars = "()\"':.[]<>/\\?"
@@ -90,7 +90,7 @@ def parse_payload(method, payload):
                 },
             }
 
-    payload['titles'] = dict((k.lower(), v) for k, v in payload['titles'].iteritems())
+    payload['titles'] = dict((k.lower(), v) for k, v in payload['titles'].items())
 
     if get_setting('kodi_language', bool):
         kodi_language = xbmc.getLanguage(xbmc.ISO_639_1)

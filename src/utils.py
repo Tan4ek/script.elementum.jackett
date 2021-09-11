@@ -12,8 +12,8 @@ _plugin_setting_prefix = "elementum.jackett."
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo("id")
 ADDON_NAME = ADDON.getAddonInfo("name")
-ADDON_PATH = ADDON.getAddonInfo("path").decode('utf-8')
-ADDON_ICON = ADDON.getAddonInfo("icon").decode('utf-8')
+ADDON_PATH = ADDON.getAddonInfo("path")
+ADDON_ICON = ADDON.getAddonInfo("icon")
 ADDON_PROFILE = ADDON.getAddonInfo("profile")
 ADDON_VERSION = ADDON.getAddonInfo("version")
 PATH_ADDONS = xbmc.translatePath("special://home/addons/")
@@ -89,7 +89,7 @@ def get_release_type(name):
 
 
 def _search_re_keys(name, re_dict, log_msg, default=""):
-    for result, search_keys in re_dict.iteritems():
+    for result, search_keys in re_dict.items():
         if bool(re.search(r'\W+(' + "|".join(search_keys) + r')\W*', name, re.IGNORECASE)):
             return result
 
